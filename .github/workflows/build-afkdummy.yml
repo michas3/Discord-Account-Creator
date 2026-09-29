@@ -22,7 +22,16 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      # Pin Gradle 8.10.2 — paperweight userdev requires Gradle 8.x
+      - name: Probe available paperweight + paper-api versions
+        run: |
+          echo "=== paperweight-userdev versions ==="
+          curl -s "https://repo.papermc.io/repository/maven-public/io/papermc/paperweight/paperweight-userdev/maven-metadata.xml" \
+            | grep -oP '(?<=<version>)[^<]+' | tail -20 || echo "fetch failed"
+          echo ""
+          echo "=== paper-api versions (last 10) ==="
+          curl -s "https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/maven-metadata.xml" \
+            | grep -oP '(?<=<version>)[^<]+' | tail -20 || echo "fetch failed"
+
       - name: Setup Gradle 8.10.2
         uses: gradle/actions/setup-gradle@v4
         with:
