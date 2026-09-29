@@ -22,15 +22,37 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      - name: Probe available paperweight + paper-api versions
+      - name: Detect latest Paper versions and patch build.gradle.kts
+        working-directory: afkdummy
         run: |
-          echo "=== paperweight-userdev versions ==="
-          curl -s "https://repo.papermc.io/repository/maven-public/io/papermc/paperweight/paperweight-userdev/maven-metadata.xml" \
-            | grep -oP '(?<=<version>)[^<]+' | tail -20 || echo "fetch failed"
-          echo ""
-          echo "=== paper-api versions (last 10) ==="
-          curl -s "https://repo.papermc.io/repository/maven-public/io/papermc/paper/paper-api/maven-metadata.xml" \
-            | grep -oP '(?<=<version>)[^<]+' | tail -20 || echo "fetch failed"
+          PAPER_MAVEN="https://repo.papermc.io/repository/maven-public"
+
+          # Latest paperweight-userdev
+          PW=$(curl -sf "$PAPER_MAVEN/io/papermc/paperweight/paperweight-userdev/maven-metadata.xml" \
+            | grep -oP '(?<=<version>)[^<]+' | grep -v SNAPSHOT | tail -1)
+          if [ -z "$PW" ]; then
+            PW=$(curl -sf "$PAPER_MAVEN/io/papermc/paperweight/paperweight-userdev/maven-metadata.xml" \
+              | grep -oP '(?<=<version>)[^<]+' | tail -1)
+          fi
+
+          # Latest paper-api
+          PA=$(curl -sf "$PAPER_MAVEN/io/papermc/paper/paper-api/maven-metadata.xml" \
+            | grep -oP '(?<=<version>)[^<]+' | tail -1)
+
+          echo "Detected paperweight-userdev: $PW"
+          echo "Detected paper-api:           $PA"
+
+          if [ -z "$PW" ] || [ -z "$PA" ]; then
+            echo "ERROR: Could not fetch version metadata from Paper Maven."
+            exit 1
+          fi
+
+          # Patch the build file in-place
+          sed -i "s|2\.0\.0-beta\.14|$PW|g" build.gradle.kts
+          sed -i "s|1\.26\.3-R0\.1-SNAPSHOT|$PA|g" build.gradle.kts
+
+          echo "--- Patched build.gradle.kts ---"
+          cat build.gradle.kts
 
       - name: Setup Gradle 8.10.2
         uses: gradle/actions/setup-gradle@v4
