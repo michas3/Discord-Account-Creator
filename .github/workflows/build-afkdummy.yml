@@ -22,38 +22,15 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      - name: Detect latest Paper versions and patch build.gradle.kts
+      # paperweight 1.7.7 + paper-api 1.21.4 are a verified compatible pair.
+      # The NMS class names (ServerPlayer, Connection, etc.) are identical
+      # across 1.21.x — swap these two strings when 1.26.3 ships a dev-bundle.
+      - name: Pin known-good Paper versions in build.gradle.kts
         working-directory: afkdummy
         run: |
-          PAPER_MAVEN="https://repo.papermc.io/repository/maven-public"
-
-          # Latest paperweight-userdev
-          PW=$(curl -sf "$PAPER_MAVEN/io/papermc/paperweight/paperweight-userdev/maven-metadata.xml" \
-            | grep -oP '(?<=<version>)[^<]+' | grep -v SNAPSHOT | tail -1)
-          if [ -z "$PW" ]; then
-            PW=$(curl -sf "$PAPER_MAVEN/io/papermc/paperweight/paperweight-userdev/maven-metadata.xml" \
-              | grep -oP '(?<=<version>)[^<]+' | tail -1)
-          fi
-
-          # Latest STABLE paper-api (pattern x.y.z-R0.1-SNAPSHOT, skip alpha/beta/pre/rc)
-          PA=$(curl -sf "$PAPER_MAVEN/io/papermc/paper/paper-api/maven-metadata.xml" \
-            | grep -oP '(?<=<version>)[^<]+' \
-            | grep -P '^\d+\.\d+(\.\d+)?-R\d+\.\d+-SNAPSHOT$' \
-            | tail -1)
-
-          echo "Detected paperweight-userdev: $PW"
-          echo "Detected paper-api:           $PA"
-
-          if [ -z "$PW" ] || [ -z "$PA" ]; then
-            echo "ERROR: Could not fetch version metadata from Paper Maven."
-            exit 1
-          fi
-
-          # Patch the build file in-place
-          sed -i "s|2\.0\.0-beta\.14|$PW|g" build.gradle.kts
-          sed -i "s|1\.26\.3-R0\.1-SNAPSHOT|$PA|g" build.gradle.kts
-
-          echo "--- Patched build.gradle.kts ---"
+          sed -i 's|2\.0\.0-beta\.14|1.7.7|g'                   build.gradle.kts
+          sed -i 's|1\.26\.3-R0\.1-SNAPSHOT|1.21.4-R0.1-SNAPSHOT|g' build.gradle.kts
+          echo "--- build.gradle.kts after patch ---"
           cat build.gradle.kts
 
       - name: Setup Gradle 8.10.2
