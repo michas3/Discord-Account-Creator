@@ -35,9 +35,11 @@ jobs:
               | grep -oP '(?<=<version>)[^<]+' | tail -1)
           fi
 
-          # Latest paper-api
+          # Latest STABLE paper-api (pattern x.y.z-R0.1-SNAPSHOT, skip alpha/beta/pre/rc)
           PA=$(curl -sf "$PAPER_MAVEN/io/papermc/paper/paper-api/maven-metadata.xml" \
-            | grep -oP '(?<=<version>)[^<]+' | tail -1)
+            | grep -oP '(?<=<version>)[^<]+' \
+            | grep -P '^\d+\.\d+(\.\d+)?-R\d+\.\d+-SNAPSHOT$' \
+            | tail -1)
 
           echo "Detected paperweight-userdev: $PW"
           echo "Detected paper-api:           $PA"
