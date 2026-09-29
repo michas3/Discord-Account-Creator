@@ -1,6 +1,6 @@
 plugins {
     java
-    id("io.papermc.paperweight.userdev") version "2.0.0-beta.14"
+    id("io.papermc.paperweight.userdev") version "2.0.0-beta.8"
     id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
@@ -18,7 +18,7 @@ repositories {
 
 dependencies {
     // NMS + Paper API via paperweight userdev (Mojang-mapped source access)
-    paperweight.paperDevBundle("1.26.3-R0.1-SNAPSHOT")
+    paperweight.paperDevBundle("1.21.4-R0.1-SNAPSHOT")
 }
 
 tasks {
