@@ -1,0 +1,22 @@
+name: AFKDummy
+version: '${project.version}'
+main: com.lo.afkdummy.AFKDummyPlugin
+api-version: '1.21'
+description: Spawns persistent fake-player entities that mobs treat as valid targets.
+authors: [lo]
+website: ''
+
+commands:
+  afkdummy:
+    description: Manage AFK dummy entities.
+    usage: /afkdummy <spawn|remove|removeall|list|tp> [args]
+    permission: afkdummy.use
+    aliases: [afkd, dummy]
+
+permissions:
+  afkdummy.use:
+    description: Spawn, remove, list, and teleport to dummies.
+    default: op
+  afkdummy.admin:
+    description: removeall and config reload.
+    default: op

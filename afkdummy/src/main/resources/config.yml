@@ -1,0 +1,22 @@
+# AFK Dummy — config.yml
+# ---------------------------------------------------------------------------
+
+# Default skin applied to every new dummy.
+# Paste the base64 texture value and its Mojang-signed signature here.
+# Leave both blank to use the classic Steve skin.
+default-skin:
+  texture: ""
+  signature: ""
+
+# How often (in ticks) the KeepAlive task re-checks whether dummies have
+# been evicted from the server's PlayerList and re-injects them.
+# 200 ticks = 10 seconds. Minimum recommended value: 40.
+keepalive-interval: 200
+
+# Maximum number of dummies that may exist on the server simultaneously.
+# Set to 0 for unlimited.
+max-dummies: 0
+
+# Broadcast a message to all online operators when a dummy is spawned
+# or removed. Useful for auditing who added/removed dummies.
+announce: true
