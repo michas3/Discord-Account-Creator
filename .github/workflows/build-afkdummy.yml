@@ -22,24 +22,15 @@ jobs:
           java-version: "21"
           distribution: "temurin"
 
-      - name: Setup Gradle
+      # Pin Gradle 8.10.2 — paperweight userdev requires Gradle 8.x
+      - name: Setup Gradle 8.10.2
         uses: gradle/actions/setup-gradle@v4
-
-      - name: Make gradlew executable (if present)
-        working-directory: afkdummy
-        run: |
-          if [ -f gradlew ]; then chmod +x gradlew; fi
-
-      - name: Bootstrap Gradle wrapper if missing
-        working-directory: afkdummy
-        run: |
-          if [ ! -f gradlew ]; then
-            gradle wrapper --gradle-version=8.10.2
-          fi
+        with:
+          gradle-version: "8.10.2"
 
       - name: Build shadowJar
         working-directory: afkdummy
-        run: ./gradlew shadowJar --no-daemon --stacktrace
+        run: gradle shadowJar --no-daemon --stacktrace
 
       - name: Upload afkdummy.jar
         uses: actions/upload-artifact@v4
